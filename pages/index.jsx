@@ -19,7 +19,9 @@ export async function getStaticProps() {
   return {
     props: {
       episodes: data,
-    }
+    },
+
+    revalidate: 60*60*8,
   }
 
 }
