@@ -26,6 +26,7 @@ export default function Home({allCards}) {
               return (
                 <tr key={card.id}>
                   <td>
+                  <Link href={'/card/' + card.name}>
                   <Image
                     width={120}
                     height={120}
@@ -33,19 +34,22 @@ export default function Home({allCards}) {
                     alt={card.name}
                     objectFit="cover"
                   />
+                  </Link>
                   </td>
                   <td>
-                    <Link href={'/card/${card.name}'}>
+                    <Link href={'/card/' + card.name}>
                       <a>{card.name}</a>
                     </Link>
                   </td>
                   <td>
-                  <Link href={'/card/${card.supertype}'}>
+                    <Link href={'/card/' + card.name}>
                       <a>{card.supertype}</a>
                     </Link>
                   </td>
                   <td>
-                    <a href="">{card.releaseDate}</a>
+                    <Link href={'/card/' + card.name}>
+                      <a href="">{card.releaseDate}</a>
+                    </Link>
                   </td>
                 </tr>
               )
