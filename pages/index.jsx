@@ -65,6 +65,7 @@ export async function getStaticProps() {
   const {data} = await api.get('cards');
  
   const cards = data.data.map(card => {
+    
     return {
       id: card.id,
       name: card.name,
