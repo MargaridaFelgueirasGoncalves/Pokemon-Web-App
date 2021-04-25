@@ -4,7 +4,7 @@ import { api } from '../../services/api';
 import Image from 'next/image';
 import styles from './card.module.scss';
 
-export default function Card({card, attacks, abilities, type, resistances}) {
+export default function Card({card, attacks, abilities, type, resistances, weaknesses}) {
    const router = useRouter();
 
    
@@ -38,10 +38,14 @@ export default function Card({card, attacks, abilities, type, resistances}) {
                     </div>
                     <div className={styles.rightContainer}>
                         <h2>Weaknesses:</h2>
+                        {weaknesses.map(weakness => {
+                            return (
                         <dl>
-                            <dd>Type: {card.weaknesses.type}</dd>
-                            <dd>Value: {card.weaknesses.value}</dd>
+                            <dd>Type: {weakness.type}</dd>
+                            <dd>Value: {weakness.value}</dd>
                         </dl>
+                        )
+                    })}
                     </div>
             </div>  
 
@@ -153,16 +157,12 @@ export async function getStaticProps(ctx) {
 
     const card = {
         id:pokemon.id,
-        name: verifyProperty(pokemon, pokemon.name, "name"),
+        name: verifyInformation(pokemon.name),
         level: verifyInformation(pokemon.level),
         image: pokemon.images.large,
         evolvesTo: verifyInformation(pokemon.evolvesTo),
         evolvesFrom: verifyInformation(pokemon.evolvesFrom),
-        weaknesses: {
-            type: verifyProperty(pokemon, pokemon.weaknesses.type, "weaknesses.type"),
-            value: verifyProperty(pokemon, pokemon.weaknesses.value, "weaknesses.value"),
-        },
-        type: verifyProperty(pokemon, listTypes(pokemon.types), "types"),
+        type: verifyInformation(listTypes(pokemon.types)),
         releaseDate: pokemon.set.releaseDate,
         hp: verifyInformation(pokemon.hp),
         setName: verifyInformation(pokemon.set.name),
@@ -170,6 +170,14 @@ export async function getStaticProps(ctx) {
         convertedRetreatCost: verifyInformation(pokemon.convertedRetreatCost),
     };
    
+
+    const weaknesses = pokemon.weaknesses.map(weakness => {
+ 
+        return {
+            type: weakness.type,
+            value: weakness.value,
+        }
+    });
 
 
     const resistances = pokemon.resistances.map(resistance => {
@@ -180,6 +188,7 @@ export async function getStaticProps(ctx) {
         }
     });
 
+        
 
     const attacks = pokemon.attacks.map(attack => {
  
@@ -209,6 +218,7 @@ export async function getStaticProps(ctx) {
             attacks,
             abilities,
             resistances,
+            weaknesses,
         },
 
         revalidate: 60*60*24,
@@ -225,16 +235,16 @@ function listCosts(attack) {
 }
 
     function verifyInformation (information) {
-        if (information === undefined) {
+        if (information === undefined || null) {
             return "--";
         }
 
         return information;
     }
 
-    function verifyProperty (objetc, information, property) {
-        if(objetc.hasOwnProperty(property)) {
-            return information;
+    function verifyProperty (object, property) {
+        if(object.hasOwnProperty(property)) {
+            return pokemon + "." + property;
         }
         
         return "--";
