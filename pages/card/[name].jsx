@@ -4,28 +4,47 @@ import { api } from '../../services/api';
 import Image from 'next/image';
 import styles from './card.module.scss';
 
-export default function Card({card, attacks}) {
+export default function Card({card, attacks, abilities, type, resistance}) {
    const router = useRouter();
 
    
     return (
         <div className={styles.card}>
-            <center>
-                <div className={styles.imageContainer}>
-                    <Image
-                        width={350}
-                        height={500}
-                        src={card.image}
-                        alt={card.name}
-                        objectFit="cover"
-                    /> 
+            <div className= {styles.upContainer}>
+                <div className="Left Container">
+                    <div className={styles.imageContainer}>
+                        <Image
+                            width={350}
+                            height={500}
+                            src={card.image}
+                            alt={card.name}
+                            objectFit="cover"
+                        /> 
+                    </div>
+                    <div className={styles.text}>
+                        <h1>{card.name}</h1>
+                        <span>{card.type}</span>
+                    </div>
                 </div>
-
-                <header>
-                <h1>{card.name}</h1>
-                <span>{card.type}</span>
-                
-                </header>
+                <div className={styles.rightTotalContainer}>
+                        <h2>About:</h2>
+                        <p>Level: {card.level}</p>
+                        <p>Evolves To: {card.evolvesTo}</p>
+                        <p>Evolves From: {card.evolvesFrom}</p>
+                        <p>hp: {card.hp}</p>
+                        <p>Set Name: {card.setName}</p>
+                        <p>Series: {card.series}</p>
+                        <p>Converted Retreat Cost: {card.convertedRetreatCost}</p>
+                    </div>
+                    <div className={styles.rightContainer}>
+                        <h2>Weaknesses:</h2>
+                        <dl>
+                            <dt> </dt>
+                            <dd>Type: {card.weaknesses.type}</dd>
+                            <dd>Value: {card.weaknesses.value}</dd>
+                        </dl>
+                    </div>
+            </div>  
 
                 <div className={styles.description}>
                     {card.description}
@@ -44,7 +63,6 @@ export default function Card({card, attacks}) {
                     }
                         )}
                 </div>
-            </center>
         </div>
     )
 }
@@ -70,24 +88,30 @@ export async function getStaticProps(ctx) {
         name: verifyProperty(pokemon, pokemon.name, "name"),
         level: verifyInformation(pokemon.level),
         image: pokemon.images.large,
-        //type: listTypes(pokemon.types),
         evolvesTo: verifyInformation(pokemon.evolvesTo),
         evolvesFrom: verifyInformation(pokemon.evolvesFrom),
         weaknesses: {
             type: verifyInformation(pokemon.weaknesses.type),
             value: verifyInformation(pokemon.weaknesses.value),
         },
-        //attacks: mapAttacks(pokemon.attacks),
         releaseDate: pokemon.set.releaseDate,
         hp: verifyInformation(pokemon.hp),
         setName: verifyInformation(pokemon.set.name),
-        series: verifyInformation(pokemon.series),
-        //resistancesType: verifyProperty(pokemon, pokemon.resistances.type, "resistances"),
-        //resistenceValue: verifyInformation(pokemon.resistances.value),
+        series: verifyInformation(pokemon.set.series),
         convertedRetreatCost: verifyInformation(pokemon.convertedRetreatCost),
-        //abilities: mapAbilities(pokemon.abilities),
     };
    
+
+    const types =  listTypes(pokemon.types);
+
+    const resistances = pokemon.resistances.map(resistance => {
+ 
+        return {
+            type: resistance.type,
+            value: resistance.value,
+        }
+    });
+
 
     const attacks = pokemon.attacks.map(attack => {
  
@@ -115,7 +139,9 @@ export async function getStaticProps(ctx) {
         props: {
             card,
             attacks,
-            abilities
+            abilities,
+            resistances,
+            types
         },
 
         revalidate: 60*60*24,
@@ -126,14 +152,14 @@ export async function getStaticProps(ctx) {
 function listCosts(attack) {
     let costs = "";
     for(let i= 0; i<attack.cost.length; i++) {
-      costs=costs + attack.cost[i];
+      costs=costs + attack.cost[i] + ", ";
     }
     return costs;
 }
 
     function verifyInformation (information) {
         if (information === undefined) {
-            return "Nothing to show here!";
+            return "--";
         }
 
         return information;
@@ -172,30 +198,12 @@ function listCosts(attack) {
         }*/
     
 
-    /*function listTypes (information) {
-        if (information === undefined) {
-            return "Nothing to show here!";
-        }
-
+    function listTypes (information) {
         let types = "";
         for(let i= 0; i<information.length; i++) {
-          types=types + information[i];
+          types=types + information[i] + ", ";
         }
         return types;
-    }*/
-
-    function mapAbilities (information) {
-        if (information === undefined) {
-            return "Nothing to show here!";
-        }
-
-        information.map(ability => {
-    
-            return {
-              name: ability.name,
-              type: ability.type,
-              description: ability.text,
-
-            };
-         })
     }
+
+    

@@ -10,4 +10,19 @@
             height: 8 remm;
         }
     }
+
+    .upContainer {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .text {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+    }
+
+    
 }
