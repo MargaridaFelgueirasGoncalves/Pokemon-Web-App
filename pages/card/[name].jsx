@@ -38,14 +38,14 @@ export default function Card({card, attacks, abilities, type, resistances, weakn
                     </div>
                     <div className={styles.rightContainer}>
                         <h2>Weaknesses:</h2>
-                        {weaknesses.map(weakness => {
+                        {weaknesses.length ? weaknesses.map(weakness => {
                             return (
                         <dl>
                             <dd>Type: {weakness.type}</dd>
                             <dd>Value: {weakness.value}</dd>
                         </dl>
                         )
-                    })}
+                    }) : "--"}
                     </div>
             </div>  
 
@@ -95,7 +95,7 @@ export default function Card({card, attacks, abilities, type, resistances, weakn
                         </tr>
                     </thead>
                     <tbody>
-                        {abilities.map(ability => {
+                        {abilities.length ? abilities.map(ability => {
                             return (
                                 <tr>
                                     <td>
@@ -106,7 +106,7 @@ export default function Card({card, attacks, abilities, type, resistances, weakn
                                     </td>
                                 </tr>
                             )
-                        })}
+                        }) : "--" }
                     </tbody>
                 </table>
             </div>
@@ -120,7 +120,7 @@ export default function Card({card, attacks, abilities, type, resistances, weakn
                     </thead>
 
                     <tbody>
-                        {resistances.map(resistance => {
+                        {resistances.length ? resistances.map(resistance => {
                             return (
                                 <tr>
                                     <td>
@@ -131,7 +131,7 @@ export default function Card({card, attacks, abilities, type, resistances, weakn
                                     </td>
                                 </tr>
                             )
-                        })}
+                        }) : "--"}
                     </tbody>
                 </table>
             </div>           
@@ -171,27 +171,40 @@ export async function getStaticProps(ctx) {
     };
    
 
-    const weaknesses = pokemon.weaknesses.map(weakness => {
+    const weaknesses = pokemon.weaknesses ? pokemon.weaknesses.map(weakness => {
  
         return {
             type: weakness.type,
             value: weakness.value,
         }
-    });
+    }) : [{type: "--", value: "--"}];
 
+    
 
-    const resistances = pokemon.resistances.map(resistance => {
+    const resistances = pokemon.resitances ? pokemon.resistances.map(resistance => {
  
         return {
             type: resistance.type,
             value: resistance.value,
         }
-    });
+    }) : [{type: "--", value: "--"}];
 
+    
         
 
     const attacks = pokemon.attacks.map(attack => {
- 
+    
+        /*if (!pokemon.attacks) {
+            return [{
+                /*name: "--",
+                convertedEnergyCost: "--",
+                damage: "--",
+                text: "--",
+                cost: "--",
+            }];*/
+        
+        
+        
         return {
             name: attack.name,
             convertedEnergyCost: attack.convertedEnergyCost,
@@ -200,17 +213,18 @@ export async function getStaticProps(ctx) {
             cost: listCosts(attack),
         }
     });
+    
 
 
-    const abilities = pokemon.abilities.map(ability => {
+    const abilities = pokemon.abilities ? pokemon.abilities.map(ability => {
  
         return {
             name: ability.name,
             type: ability.type,
             description: ability.text,
         }
-    });
-
+    }) : [{name: "--", type: "--", description: "--"}];
+    
 
     return {
         props: {
@@ -258,5 +272,5 @@ function listCosts(attack) {
         }
         return types.substring(0, types.length-2);
     }
-
     
+
